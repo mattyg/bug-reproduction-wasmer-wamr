@@ -25,12 +25,14 @@
 
             # LLVM and related dependencies
             cmake
-            llvmPackages_15.libllvm
-            llvmPackages_15.llvm
+            llvmPackages.libllvm
+            llvmPackages.llvm
+            llvmPackages.libclang.lib
             libxml2
             libffi
             glibc
-            libclang
+            clang
+
 
             # Rust tooling
 
@@ -58,6 +60,10 @@
             # https://github.com/bytecodealliance/wasm-tools
             wasm-tools
           ];
+
+          shellHook = ''
+            export LIBCLANG_PATH="${pkgs.llvmPackages.libclang.lib}/lib"
+          '';
 
           env.LLVM_SYS_150_PREFIX = pkgs.llvmPackages_15.llvm.dev;
         };
