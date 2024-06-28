@@ -47,20 +47,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 "#,
   )?;
   let mut store = Store::default();
-  struct MyEnv {}
-  let env = FunctionEnv::new(&mut store, MyEnv {});
+  struct MyEnv {
+      context_val: i32,
+  }
+  let env = FunctionEnv::new(&mut store, MyEnv { context_val: 1234 });
   let module = Module::new(&store, wasm_bytes)?;
 
-  // Define some context data that the host function closure will use
-  let context_val = 1234;
   fn my_val() -> i32 {
     1234
   }
 
   // Define the host function closure
-  let multiply_by_3 = move |_env: FunctionEnvMut<MyEnv>, a: i32| -> i32 {
+  let multiply_by_3 = move |env: FunctionEnvMut<MyEnv>, a: i32| -> i32 {
     println!("Expected STATIC_CONTEXT_VAL to equal 1234, actually equals {}", STATIC_CONTEXT_VAL);
-    println!("Expected context_val to equal 1234, actually equals {}", context_val);
+    println!("Expected context_val to equal 1234, actually equals {}", env.data().context_val);
     println!("Expected my_val() to equal 1234, actually equals {}", my_val());
 
     a * 3
